@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Verification Audit Log</h2>
+    <p class="card-description">Complete history of all verification checks. Logs are cryptographically signed for integrity verification.</p>
+  </div>
+  <div class="export-actions">
+    <a href="/api/audit/export?format=json" class="btn btn-secondary"><svg class="icon-sm"><use href="#i-download"/></svg>Export JSON</a>
+    <a href="/api/audit/export?format=csv" class="btn btn-secondary"><svg class="icon-sm"><use href="#i-doc"/></svg>Export CSV</a>
+    <button class="btn btn-secondary" id="verifyAuditBtn"><svg class="icon-sm"><use href="#i-check"/></svg>Verify Integrity</button>
+  </div>
+  <div id="auditVerifyResult" class="mt-1"></div>
+  <div id="auditLog" class="mt-1"><div class="loading"><div class="spinner"></div>Loading audit log...</div></div>
+  <div id="auditPagination" class="pagination"></div>
+</div>

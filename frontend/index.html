@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>OpenAuthority</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- SVG Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+    <symbol id="i-crosshair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M12 3v18"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></symbol>
+    <symbol id="i-android" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.5 0-.91.41-.91.91s.41.91.91.91.91-.41.91-.91-.41-.91-.91-.91zm-11.046 0c-.5 0-.91.41-.91.91s.41.91.91.91.91-.41.91-.91-.41-.91-.91-.91zm11.405-6.02l1.9-3.29c.11-.18.05-.42-.12-.53-.18-.11-.42-.05-.53.12l-1.93 3.33C15.17 8.23 13.14 7.79 11 7.79s-4.17.44-6.19 1.18L2.88 5.64c-.11-.17-.35-.23-.53-.12-.17.11-.23.35-.12.53l1.9 3.29C1.54 10.95 0 13.53 0 16.5h22c0-2.97-1.54-5.55-4.12-7.18z"/></symbol>
+    <symbol id="i-windows" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .15V5.21L20 3zM3 13l6 .09v6.81l-6-1.15V13zm17 .25V22l-10-1.91V13.1l10 .15z"/></symbol>
+    <symbol id="i-linux" viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139z"/></symbol>
+    <symbol id="i-discord" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></symbol>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div class="logo"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h1>OpenAuthority</h1>
+      <p class="subtitle">Constrained Trust Infrastructure for Certificate Authorities</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="home">Home</button>
+      <button class="tab" data-tab="upload">Enroll CA</button>
+      <button class="tab" data-tab="certificates">Trust Store</button>
+      <button class="tab" data-tab="audit">Audit Log</button>
+      <button class="tab" data-tab="export">Export</button>
+      <button class="tab" data-tab="faq">FAQ</button>
+      <button class="tab" data-tab="about">About</button>
+    </div>
+    <!-- HOME -->
+    <div id="home" class="tab-content active">
+      <div class="hero">
+        <h2>Least-Privilege Trust Infrastructure for Certificate Authorities</h2>
+        <p>OpenAuthority explores a constrained-trust model for certificate authority verification. Instead of broadly trusted issuance authority, each CA is cryptographically limited to specific domains and continuously re-verified through DNS-based eligibility checks.</p>
+        <p>Modern Web PKI, Certificate Transparency, and projects like Let's Encrypt significantly improved certificate accessibility and ecosystem visibility. OpenAuthority explores a complementary question: whether issuance authority itself can be more narrowly constrained.</p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary" data-switch-tab="upload"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Enroll Your CA</button>
+          <button class="btn btn-secondary" data-switch-tab="export"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Trust Store</button>
+        </div>
+      </div>
+
+      <!-- Core Design Principles -->
+      <div class="section-header"><h2>Core Design Principles</h2><p>Applying least-privilege and blast-radius reduction principles to certificate authority trust</p></div>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--success-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Mandatory Name Constraints</h3>
+          <p>Every CA includes mandatory name constraints. A CA authorized for <code>example.com</code> is cryptographically limited to issuing for <code>example.com</code> and its subdomains, reducing unnecessary trust scope.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--success-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <h3>Continuous Verification</h3>
+          <p>Eligibility is continuously re-verified through DNS-based ownership checks. Probationary CAs are checked every 6 hours and active CAs every 24 hours to ensure trust assertions remain current.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--success-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <h3>Limited Blast Radius</h3>
+          <p>The design focuses on reducing compromise impact rather than assuming perfect prevention. If a CA is compromised, issuance scope remains constrained to domains within its verified eligibility boundaries.</p>
+        </div>
+      </div>
+
+      <!-- Why Explore Constrained Trust -->
+      <div class="section-header" style="margin-top:3rem;"><h2>Why Explore Constrained Trust?</h2><p>Modern Web PKI has significantly improved over the last decade. OpenAuthority explores whether trust authority itself can be scoped more narrowly.</p></div>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Least-Privilege Trust</h3>
+          <p>Traditional Web PKI relies on globally trusted roots with broad issuance authority. OpenAuthority explores whether trust relationships can instead be constrained to narrower operational boundaries.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
+          <h3>Reduced Blast Radius</h3>
+          <p>Rather than attempting to eliminate compromise entirely, the model focuses on limiting the scope and operational impact of a compromised certificate authority.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <h3>Continuous Eligibility Verification</h3>
+          <p>Certificate Transparency improves visibility into issuance activity. OpenAuthority explores an additional property: continuously verifying whether a CA remains eligible to hold authority for specific domains.</p>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="section-header" style="margin-top:3rem;"><h2>How OpenAuthority Works</h2><p>An experimental constrained-trust workflow combining DNS-based eligibility verification with mandatory issuance boundaries.</p></div>
+      <div class="steps">
+        <div class="step"><div class="step-number">1</div><div class="step-content"><h4>Create Your Root CA with Name Constraints</h4><p>Generate a root CA certificate that includes Name Constraints—limiting which domains it can sign for. This is mandatory.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content"><h4>Prove Domain Ownership via DNS</h4><p>Publish a TXT record containing your CA's SHA-512 fingerprint at <code>_openauthority.yourdomain.com</code>.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content"><h4>Pass the 7-Day Probationary Period</h4><p>Your CA enters a probationary period where we verify the DNS record every 6 hours for 7 days.</p></div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content"><h4>Join the Trust Store</h4><p>Once verified, your CA is included in the OpenAuthority trust store for anyone to download.</p></div></div>
+      </div>
+
+      <!-- Who Is This For -->
+      <div class="section-header" style="margin-top:3rem;"><h2>Who Is This For?</h2></div>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--success-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <h3>Homelabbers & Self-Hosters</h3>
+          <p>Run your own CA for your homelab without browser warnings.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--warning-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <h3>Enterprises & Organizations</h3>
+          <p>Full control over your internal PKI with custom certificate lifetimes. Support internal PKI deployments with organization-controlled trust boundaries.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon" style="background:var(--danger-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <h3>CA Service Providers</h3>
+          <p>Build a business offering hosted CA services with verifiable trust.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lazy-loaded tab containers -->
+    <div id="upload" class="tab-content"></div>
+    <div id="certificates" class="tab-content"></div>
+    <div id="audit" class="tab-content"></div>
+    <div id="export" class="tab-content"></div>
+    <div id="faq" class="tab-content"></div>
+    <div id="about" class="tab-content"></div>
+
+    <footer>
+      <p><strong>OpenAuthority © 2026 CaramelFox Networks LLC</strong></p>
+      <p>Source Code available on <strong><a href="https://github.com/CaramelFox-Networks/OpenAuthority">Github</a></strong></p>
+      <p class="text-xs c-tertiary mt-05">We don't collect personal data. <a href="#" data-switch-tab="about" class="c-secondary">Learn more</a></p>
+      <a href="https://discord.gg/SsQxmu8sQU" target="_blank" class="footer-link"><svg class="icon-sm"><use href="#i-discord"/></svg>Join our Discord</a>
+    </footer>
+
+    <!-- Certificate Detail Modal -->
+    <div id="certModal" class="modal-overlay" style="display:none;">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalCertName">Certificate Details</h2>
+          <button class="modal-close" id="modalCloseBtn">&times;</button>
+        </div>
+        <div id="modalContent"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
