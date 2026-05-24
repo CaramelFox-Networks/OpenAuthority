@@ -17,7 +17,7 @@ database_id = "13d0025d-5ecd-4c72-8a0e-a56e77daf4a5"
 binding = "RATE_LIMIT_KV"
 id = "5e8cdcf2b1434a42925ba35bc27cab5e"
 
-# Cron trigger for periodic verification (runs hourly)
+# Cron trigger for periodic verification (runs every half hour)
 [triggers]
 crons = ["*/30 * * * *"]
 
