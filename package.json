@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:init": "wrangler d1 execute openauthority-db --file=./schema.sql"
+    "db:init": "wrangler d1 execute openauthority-db --file=./schema.sql",
+    "preview": "wrangler dev"
   },
   "dependencies": {
     "@peculiar/x509": "^2.0.0",
