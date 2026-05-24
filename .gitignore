@@ -63,7 +63,6 @@ public_key*
 
 # Local Wrangler config overrides
 wrangler.toml.local
-wrangler.toml
 
 # Database dumps / local sqlite
 *.sqlite
