@@ -133,6 +133,7 @@ interface RekorEntry {
   logIndex: number;
   integratedTime: number;
   body: string;
+  submittedBody?: string;
   inclusionProof: {
     logIndex: number;
     rootHash: string;
@@ -908,13 +909,16 @@ async function submitToRekor(
       }
     };
 
+    const rekorLeafBody = JSON.stringify(entry);
+    const rekorLeafBodyBase64 = btoa(rekorLeafBody);
+
     const response = await fetch(`${REKOR_URL}/api/v1/log/entries`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify(entry)
+      body: rekorLeafBody
     });
 
     if (!response.ok) {
@@ -932,6 +936,7 @@ async function submitToRekor(
       logIndex: entryData.logIndex,
       integratedTime: entryData.integratedTime,
       body: entryData.body,
+      submittedBody: rekorLeafBodyBase64,
       inclusionProof: entryData.verification?.inclusionProof || {
         logIndex: entryData.logIndex,
         rootHash: '',
@@ -1072,6 +1077,7 @@ async function createCheckpoint(env: Env): Promise<TransparencyCheckpoint | null
         logIndex: rekorEntry.logIndex,
         inclusionProof: rekorEntry.inclusionProof
       }),
+      submitted_body: rekorEntry.submittedBody,
       serviceUrl: 'https://rekor.sigstore.dev'
     });
   }
