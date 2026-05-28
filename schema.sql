@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS transparency_checkpoints (
   previous_checkpoint_hash TEXT NOT NULL,
   checkpoint_hash TEXT NOT NULL UNIQUE,
   external_anchors TEXT,
+  consistency_proof TEXT,
   rekor_entry_uuid TEXT,
   rekor_log_index INTEGER,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP

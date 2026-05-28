@@ -561,12 +561,23 @@ async function generateConsistencyProof(
   oldSize: number,
   newSize: number
 ): Promise<ConsistencyProof> {
-  if (oldSize > newSize || oldSize < 0 || newSize > leafHashes.length) {
-    throw new Error('Invalid tree sizes for consistency proof');
+
+  if (oldSize <= 0) {
+    throw new Error('oldSize must be > 0');
+  }
+
+  if (oldSize > newSize) {
+    throw new Error('oldSize cannot exceed newSize');
+  }
+
+  if (newSize > leafHashes.length) {
+    throw new Error('newSize exceeds available leaves');
   }
 
   if (newSize > MAX_MERKLE_TREE_SIZE) {
-    throw new Error(`Tree size exceeds maximum of ${MAX_MERKLE_TREE_SIZE}`);
+    throw new Error(
+      `Tree size ${newSize} exceeds maximum`
+    );
   }
 
   const oldLeaves = leafHashes.slice(0, oldSize);
@@ -575,13 +586,12 @@ async function generateConsistencyProof(
   const { root: oldRoot } = await buildMerkleTree(oldLeaves);
   const { root: newRoot } = await buildMerkleTree(newLeaves);
 
-  const proof: string[] = [];
-  if (oldSize < newSize) {
-    const additionalLeaves = leafHashes.slice(oldSize, newSize);
-    for (const leaf of additionalLeaves) {
-      proof.push(leaf);
-    }
-  }
+  const proof = await buildConsistencyProofRecursive(
+    leafHashes,
+    oldSize,
+    newSize,
+    0
+  );
 
   return {
     oldSize,
@@ -590,6 +600,97 @@ async function generateConsistencyProof(
     newRoot,
     proof
   };
+}
+
+async function buildConsistencyProofRecursive(
+  leaves: string[],
+  m: number,
+  n: number,
+  start: number
+): Promise<string[]> {
+
+  if (m === n) {
+    return [];
+  }
+
+  const k = largestPowerOfTwoLessThan(n);
+
+  // ----------------------------------------------------------
+  // Entire old tree fits inside LEFT subtree
+  // ----------------------------------------------------------
+
+  if (m <= k) {
+
+    const proof = await buildConsistencyProofRecursive(
+      leaves,
+      m,
+      k,
+      start
+    );
+
+    const rightHash = await hashFullSubtree(
+      leaves,
+      start + k,
+      n - k
+    );
+
+    proof.push(rightHash);
+
+    return proof;
+  }
+
+  // ----------------------------------------------------------
+  // Old tree spans LEFT + RIGHT
+  // ----------------------------------------------------------
+
+  const proof = await buildConsistencyProofRecursive(
+    leaves,
+    m - k,
+    n - k,
+    start + k
+  );
+
+  const leftHash = await hashFullSubtree(
+    leaves,
+    start,
+    k
+  );
+
+  proof.push(leftHash);
+
+  return proof;
+}
+
+function largestPowerOfTwoLessThan(n: number): number {
+  let k = 1;
+
+  while ((k << 1) < n) {
+    k <<= 1;
+  }
+
+  return k;
+}
+
+async function hashFullSubtree(
+  leaves: string[],
+  start: number,
+  size: number
+): Promise<string> {
+  if (size === 1) {
+    return leaves[start];
+  }
+
+  const k = largestPowerOfTwoLessThan(size);
+
+  const left = await hashFullSubtree(leaves, start, k);
+
+  const right = await hashFullSubtree(
+    leaves,
+    start + k,
+    size - k
+  );
+
+  return computeNodeHash(left, right);
 }
 
 // ============================================================
@@ -1048,9 +1149,10 @@ async function createCheckpoint(env: Env): Promise<TransparencyCheckpoint | null
   const root = await tree.getRoot();
 
   const prevCheckpoint = await env.DB.prepare(`
-    SELECT checkpoint_hash FROM transparency_checkpoints 
+    SELECT checkpoint_hash, tree_size
+    FROM transparency_checkpoints
     ORDER BY id DESC LIMIT 1
-  `).first<{ checkpoint_hash: string }>();
+  `).first<{ checkpoint_hash: string; tree_size: number; }>();
 
   const previousCheckpointHash = prevCheckpoint?.checkpoint_hash || 'GENESIS';
 
@@ -1064,6 +1166,30 @@ async function createCheckpoint(env: Env): Promise<TransparencyCheckpoint | null
   };
   const checkpointData = canonicalizeJSON(checkpointDataObj);
   const checkpointHash = await sha256(checkpointData);
+
+  let consistencyProof: string | null = null;
+
+  if (prevCheckpoint) {
+    const entries = await env.DB.prepare(`
+      SELECT leaf_hash FROM verification_log
+      WHERE leaf_hash IS NOT NULL
+      ORDER BY tree_position ASC
+    `).all<{ leaf_hash: string }>();
+
+    const leafHashes = entries.results.map(e => e.leaf_hash);
+
+    const proof = await generateConsistencyProof(
+      leafHashes,
+      prevCheckpoint.tree_size,
+      treeSize
+    );
+
+    consistencyProof = JSON.stringify({
+      from_tree_size: prevCheckpoint.tree_size,
+      to_tree_size: treeSize,
+      proof
+    });
+  }
 
   const externalAnchors: ExternalAnchor[] = [];
 
@@ -1089,12 +1215,12 @@ async function createCheckpoint(env: Env): Promise<TransparencyCheckpoint | null
     INSERT INTO transparency_checkpoints (
       tree_size, root_hash, timestamp, signature, 
       previous_checkpoint_hash, checkpoint_hash, external_anchors,
-      rekor_entry_uuid, rekor_log_index
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      consistency_proof, rekor_entry_uuid, rekor_log_index
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     treeSize, root, sth.timestamp, sth.signature || null,
     previousCheckpointHash, checkpointHash, JSON.stringify(externalAnchors),
-    rekorEntry?.uuid || null, rekorEntry?.logIndex || null
+    consistencyProof, rekorEntry?.uuid || null, rekorEntry?.logIndex || null
   ).run();
 
   console.log(`Checkpoint created: tree_size=${treeSize}, root=${root.substring(0, 16)}...`);
@@ -1821,6 +1947,7 @@ async function handleListCheckpoints(
 
   const checkpoints = results.results.map(cp => ({
     ...cp,
+    consistency_proof: cp.consistency_proof ? JSON.parse(cp.consistency_proof) : null,
     external_anchors: cp.external_anchors ? JSON.parse(cp.external_anchors) : []
   }));
 
@@ -1908,7 +2035,7 @@ async function handleGetConsistencyProof(
   newSize: number,
   corsHeaders: Record<string, string>
 ): Promise<Response> {
-  if (oldSize < 0 || newSize < oldSize) {
+  if (oldSize <= 0 || newSize <= 0 || newSize < oldSize) {
     return new Response(
       JSON.stringify({ error: "Invalid tree sizes. old_size must be >= 0 and <= new_size" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -1935,6 +2062,18 @@ async function handleGetConsistencyProof(
       JSON.stringify({ error: `new_size ${newSize} exceeds current tree size ${leafHashes.length}` }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+  }
+
+  if (oldSize === newSize) {
+    return new Response(JSON.stringify({
+      proof: [],
+      verificationInstructions: {
+        description: "Trees are identical; empty consistency proof",
+        algorithm: "RFC 6962 consistency proof"
+      }
+    }, null, 2), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
   }
 
   const proof = await generateConsistencyProof(leafHashes, oldSize, newSize);
