@@ -124,9 +124,9 @@ export async function computeContentHash(content: string): Promise<string> {
     .join('');
 }
 
-export function generateReproducibleExport(
+export async function generateReproducibleExport(
   certificates: Array<{ pem_data: string; subject: string; fingerprint_sha256: string; created_at: string; last_check_at: string }>
-): { content: string; manifest: ExportManifest } {
+): Promise<{ content: string; manifest: ExportManifest }> {
   const sortedCerts = [...certificates].sort((a, b) => 
     a.fingerprint_sha256.localeCompare(b.fingerprint_sha256)
   );
@@ -145,7 +145,7 @@ export function generateReproducibleExport(
       addedAt: c.created_at,
       lastVerified: c.last_check_at
     })),
-    contentHash: ""
+    contentHash: await computeContentHash(bundle)
   };
 
   return { content: bundle, manifest };
