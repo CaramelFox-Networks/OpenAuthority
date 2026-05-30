@@ -21,8 +21,9 @@ export function generateZip(files: Array<{ name: string; data: Uint8Array<ArrayB
   let localHeadersSize = 0;
 
   for (const file of files) {
-    localHeadersSize += 30 + file.name.length + file.data.length;
-    centralDirectorySize += 46 + file.name.length;
+    const nameBytes = encoder.encode(file.name);
+    localHeadersSize += 30 + nameBytes.length + file.data.length;
+    centralDirectorySize += 46 + nameBytes.length;
   }
 
   const totalSize = localHeadersSize + centralDirectorySize + 22;
