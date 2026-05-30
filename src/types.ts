@@ -10,6 +10,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import { D1Database, KVNamespace } from "@cloudflare/workers-types/experimental";
+
 export interface Env {
   DB: D1Database;
   RATE_LIMIT_KV?: KVNamespace;
@@ -136,11 +138,12 @@ export interface AuditLogEntry {
 
 // External audit checkpoint
 export interface ExternalAnchor {
-  type: 'rfc3161' | 'blockchain' | 'transparency_log';
+  type: 'rfc3161' | 'blockchain' | 'transparency_log' | 'rekor';
   timestamp: string;
   proof: string;
   serviceUrl?: string;
   transactionId?: string;
+  submitted_body?: string;
 }
 
 // Signed export manifest
@@ -155,6 +158,7 @@ export interface ExportManifest {
     lastVerified: string;
   }>;
   contentHash: string;
+  canonicalization?: string;
   signature?: string;
   signatureAlgorithm?: string;
 }

@@ -73,7 +73,7 @@ function parseBasicConstraints(cert: x509.X509Certificate): BasicConstraints {
         ? parsed.pathLenConstraint 
         : undefined
     };
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Failed to parse Basic Constraints with ASN.1 library:", e);
     // Fallback: return safe default (not a CA)
     return { isCA: false };
@@ -121,7 +121,7 @@ function parseNameConstraints(cert: x509.X509Certificate): NameConstraints {
     }
 
     return constraints;
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Failed to parse Name Constraints with ASN.1 library:", e);
     return constraints;
   }
@@ -181,11 +181,16 @@ function countMaskBits(mask: Uint8Array): number {
 /**
  * Parse a PEM or DER encoded certificate
  */
-export async function parseCertificate(certData: string | Uint8Array): Promise<ParsedCertificate> {
+export async function parseCertificate(certData: string | Uint8Array<ArrayBuffer>): Promise<ParsedCertificate> {
   // Parse the certificate
-  const cert = new x509.X509Certificate(certData);
+  const normalizedCertData =
+    typeof certData === 'string'
+    ? certData
+    : new Uint8Array(certData.buffer.slice(0));
 
-  // HIGH PRIORITY #2: Use properly parsed Basic Constraints
+  const cert = new x509.X509Certificate(normalizedCertData);
+
+  // Use properly parsed Basic Constraints
   const basicConstraints = parseBasicConstraints(cert);
 
   if (!basicConstraints.isCA) {

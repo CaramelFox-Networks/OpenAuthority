@@ -218,7 +218,7 @@ function parseDNSTXTResponse(data: Uint8Array, expectedId?: number): string[] {
     );
   }
 
-  let offset = DNS_LIMITS.DNS_HEADER_SIZE;
+  let offset: number = DNS_LIMITS.DNS_HEADER_SIZE;
 
   for (let i = 0; i < qdcount; i++) {
     offset = skipDNSName(data, offset);
