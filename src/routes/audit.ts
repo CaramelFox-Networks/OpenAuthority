@@ -237,7 +237,7 @@ export async function handleAuditRoutes(
   }
 
   if (
-    request.method === 'POST' &&
+    request.method === 'GET' &&
     (
       url.pathname === '/api/audit-verify' ||
       url.pathname === '/api/audit/verify'
