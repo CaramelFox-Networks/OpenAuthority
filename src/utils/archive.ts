@@ -21,8 +21,9 @@ export function generateZip(files: Array<{ name: string; data: Uint8Array<ArrayB
   let localHeadersSize = 0;
 
   for (const file of files) {
-    localHeadersSize += 30 + file.name.length + file.data.length;
-    centralDirectorySize += 46 + file.name.length;
+    const nameBytes = encoder.encode(file.name);
+    localHeadersSize += 30 + nameBytes.length + file.data.length;
+    centralDirectorySize += 46 + nameBytes.length;
   }
 
   const totalSize = localHeadersSize + centralDirectorySize + 22;
@@ -124,9 +125,9 @@ export async function computeContentHash(content: string): Promise<string> {
     .join('');
 }
 
-export function generateReproducibleExport(
+export async function generateReproducibleExport(
   certificates: Array<{ pem_data: string; subject: string; fingerprint_sha256: string; created_at: string; last_check_at: string }>
-): { content: string; manifest: ExportManifest } {
+): Promise<{ content: string; manifest: ExportManifest }> {
   const sortedCerts = [...certificates].sort((a, b) => 
     a.fingerprint_sha256.localeCompare(b.fingerprint_sha256)
   );
@@ -145,7 +146,7 @@ export function generateReproducibleExport(
       addedAt: c.created_at,
       lastVerified: c.last_check_at
     })),
-    contentHash: ""
+    contentHash: await computeContentHash(bundle)
   };
 
   return { content: bundle, manifest };
@@ -176,9 +177,15 @@ export async function signManifest(env: Env, manifest: ExportManifest): Promise<
       new TextEncoder().encode(canonicalJson)
     );
 
+    const signatureBytes = new Uint8Array(signature);
+    let binarySignature = "";
+    for (let i = 0; i < signatureBytes.length; i++) {
+      binarySignature += String.fromCharCode(signatureBytes[i]);
+    }
+
     return {
       ...manifest,
-      signature: btoa(String.fromCharCode(...new Uint8Array(signature))),
+      signature: btoa(binarySignature),
       signatureAlgorithm: "ECDSA-P256-SHA256",
       canonicalization: "RFC8785-JCS"
     };
