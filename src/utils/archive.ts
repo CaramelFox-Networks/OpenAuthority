@@ -176,9 +176,15 @@ export async function signManifest(env: Env, manifest: ExportManifest): Promise<
       new TextEncoder().encode(canonicalJson)
     );
 
+    const signatureBytes = new Uint8Array(signature);
+    let binarySignature = "";
+    for (let i = 0; i < signatureBytes.length; i++) {
+      binarySignature += String.fromCharCode(signatureBytes[i]);
+    }
+
     return {
       ...manifest,
-      signature: btoa(String.fromCharCode(...new Uint8Array(signature))),
+      signature: btoa(binarySignature),
       signatureAlgorithm: "ECDSA-P256-SHA256",
       canonicalization: "RFC8785-JCS"
     };
