@@ -89,7 +89,7 @@ export function generateZip(files: Array<{ name: string; data: Uint8Array<ArrayB
   return buffer.buffer.slice(
     buffer.byteOffset,
     buffer.byteOffset + buffer.byteLength
-  )
+  );
 }
 
 export function crc32(data: Uint8Array): number {
