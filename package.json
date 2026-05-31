@@ -1,12 +1,15 @@
 {
   "name": "openauthority",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:init": "wrangler d1 execute openauthority-db --file=./schema.sql",
-    "preview": "wrangler dev"
+    "preview": "wrangler dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@peculiar/x509": "^2.0.0",
@@ -14,7 +17,9 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240117.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "typescript": "^5.3.0",
+    "vitest": "^4.1.7",
     "wrangler": "^4.94.0"
   }
 }

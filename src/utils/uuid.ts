@@ -10,6 +10,6 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export function generateUUID(input: string): string {
+export function generateUUID(): string {
   return crypto.randomUUID().toUpperCase();
 }
