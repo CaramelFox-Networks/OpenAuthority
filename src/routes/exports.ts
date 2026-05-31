@@ -12,7 +12,7 @@
 
 import { Env, THREAT_MODEL_VERSION, OPERATOR_TRUST_VERSION } from '../types';
 import { VALID_EXPORT_FORMATS, MAX_EXPORT_CERTIFICATES, MERKLE_TREE_VERSION } from '../config'
-import { canonicalizeJSON, generateZip, generateReproducibleExport, computeContentHash, signManifest, normalizeHeaders } from '../utils';
+import { canonicalizeJSON, generateZip, generateReproducibleExport, signManifest, normalizeHeaders } from '../utils';
 import { extractCN, generateMobileConfig } from '../certificates';
 import { buildMerkleTree, TrustStoreSnapshot } from '../merkle';
 import { verifyCertificateEligibility, generateTrustStoreSnapshot, verifyTrustStoreSnapshot } from '../trust';
@@ -76,8 +76,7 @@ export async function handleExport(env: Env, format: string, corsHeaders: Record
     }
   }
 
-  const { content, manifest } = generateReproducibleExport(eligibleCertificates);
-  manifest.contentHash = await computeContentHash(content);
+  const { content, manifest } = await generateReproducibleExport(eligibleCertificates);
 
   const signedManifest = await signManifest(env, manifest);
 

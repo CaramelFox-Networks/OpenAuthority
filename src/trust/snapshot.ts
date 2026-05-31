@@ -38,7 +38,7 @@ export async function generateTrustStoreSnapshot(env: Env): Promise<TrustStoreSn
     const addedEntry = await env.DB.prepare(`
       SELECT id, tree_position FROM verification_log 
       WHERE ca_id = ? AND check_type = 'certificate_added' LIMIT 1
-    `).first<{ id: number; tree_position: number }>(cert.id);
+    `).bind(cert.id).first<{ id: number; tree_position: number }>();
 
     let inclusionProof: MerkleProof | undefined;
     if (addedEntry && latestCheckpoint) {

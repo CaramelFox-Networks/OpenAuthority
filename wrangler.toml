@@ -22,3 +22,4 @@ id = "5e8cdcf2b1434a42925ba35bc27cab5e"
 crons = ["*/30 * * * *"]
 
 [vars]
+TIMESTAMP_SERVICE_URL = "http://timestamp.digicert.com"
