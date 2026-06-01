@@ -114,7 +114,7 @@ async function buildConsistencyProofRecursive(
     k
   );
 
-  proof.push(leftHash);
+  proof.unshift(leftHash);
 
   return proof;
 }
