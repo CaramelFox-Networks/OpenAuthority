@@ -6,10 +6,6 @@ import {
   hashFullSubtree
 } from '../../src/merkle/consistency';
 
-import {
-  buildMerkleTree
-} from '../../src/merkle/tree';
-
 describe(
   'OpenAuthority consistency proof soundness',
   () => {
