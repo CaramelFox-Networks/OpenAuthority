@@ -14,13 +14,13 @@ import { generateUUID } from "../utils";
 import { pemToDer, extractCN } from "./parsing";
 
 export function generateMobileConfig(certificates: Array<{ pem_data: string; subject: string; fingerprint_sha256: string }>): string {
-  const profileUUID = generateUUID('openauthority-trust-store-profile');
+  const profileUUID = generateUUID();
 
   const certPayloads = certificates.map((cert, index) => {
     const derData = pemToDer(cert.pem_data);
     const base64Data = btoa(String.fromCharCode(...derData));
     const formattedBase64 = base64Data.match(/.{1,52}/g)?.join('\n') || base64Data;
-    const certUUID = generateUUID(cert.fingerprint_sha256);
+    const certUUID = generateUUID();
     const certName = extractCN(cert.subject);
 
     return `
