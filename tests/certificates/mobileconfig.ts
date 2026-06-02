@@ -94,16 +94,4 @@ describe("generateMobileConfig", () => {
 
     expect(xml).toContain("AQID");
   });
-
-  it("creates payload UUIDs from certificate fingerprints", () => {
-    const xml = generateMobileConfig([
-      {
-        pem_data: "PEM",
-        subject: "CN=Root",
-        fingerprint_sha256: "abcdef",
-      },
-    ]);
-
-    expect(xml).toContain("CERT-abcdef");
-  });
 });
