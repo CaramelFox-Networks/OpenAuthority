@@ -43,7 +43,7 @@ describe(
               newSize
             );
 
-          console.log(
+          /*console.log(
             JSON.stringify(
               {
                 oldSize,
@@ -56,7 +56,7 @@ describe(
               null,
               2
             )
-          );
+          );*/
         }
 
         expect(true).toBe(true);
