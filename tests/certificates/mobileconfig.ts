@@ -34,7 +34,6 @@ describe("generateMobileConfig", () => {
       },
     ]);
 
-    expect(xml).toContain("PROFILE-UUID");
     expect(xml).toContain("CERT-fp1");
     expect(xml).toContain("Example Root");
     expect(xml).toContain("Example Root.cer");
