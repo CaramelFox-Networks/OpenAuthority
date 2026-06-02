@@ -23,7 +23,7 @@ import {
   DNS_MAX_NAME_LENGTH,
   DNS_MAX_LABEL_LENGTH,
 } from './config/constants';
-import { runPeriodicVerification } from './jobs/periodic-validation';
+import { runCron } from './jobs/cron';
 import {
   handlePublicRoutes,
   handleCertificateRoutes,
@@ -95,6 +95,6 @@ export default {
   },
 
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-    ctx.waitUntil(runPeriodicVerification(env));
+    ctx.waitUntil(runCron(env));
   }
 };

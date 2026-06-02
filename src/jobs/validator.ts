@@ -11,13 +11,12 @@
  */
 
 import { Env, CertificateAuthority } from "../types";
-import { PROBATIONARY_CHECK_HOURS, VERIFICATION_MARGIN_MINUTES, ACTIVE_CHECK_HOURS, MAX_CONSECUTIVE_FAILURES, PROBATIONARY_PERIOD_DAYS, MIN_SUCCESSFUL_VERIFICATIONS } from "../config";
-import { shouldCreateCheckpoint, createCheckpoint } from "../merkle";
+import { PROBATIONARY_CHECK_HOURS, VERIFICATION_MARGIN_MINUTES, ACTIVE_CHECK_HOURS, MAX_CONSECUTIVE_FAILURES } from "../config";
 import { createAuditLogEntry } from "../services";
 import { safeDNSLookup } from "../utils";
 import { verifyDNSTXT, extractBaseDomain, extractIPAddress, verifyWHOIS } from "../verification"
 
-export async function runPeriodicVerification(env: Env): Promise<void> {
+export async function runValidator(env: Env): Promise<void> {
   console.log("Starting periodic verification...");
 
   const certificates = await env.DB.prepare(`
@@ -39,10 +38,6 @@ export async function runPeriodicVerification(env: Env): Promise<void> {
   if (certificates.results.length === 0) {
     console.log("No certificates due for verification");
 
-    if (await shouldCreateCheckpoint(env)) {
-      console.log("Creating scheduled checkpoint...");
-      await createCheckpoint(env);
-    }
     return;
   }
 
@@ -135,41 +130,18 @@ export async function runPeriodicVerification(env: Env): Promise<void> {
         console.log(`Certificate ${cert.fingerprint_sha256.substring(0, 16)}... verification failed (${currentFailures}/${MAX_CONSECUTIVE_FAILURES}): ${verificationError}`);
       }
     } else {
-      let newStatus = cert.status;
-      const newVerificationCount = (cert.successful_verification_count || 0) + 1;
+        const newVerificationCount = (cert.successful_verification_count || 0) + 1;
 
-      if (cert.status === 'probationary') {
-        const createdAt = new Date(cert.created_at);
-        const probationEndDate = new Date(createdAt.getTime() + PROBATIONARY_PERIOD_DAYS * 24 * 60 * 60 * 1000);
-
-        if (new Date() >= probationEndDate && newVerificationCount >= MIN_SUCCESSFUL_VERIFICATIONS) {
-          newStatus = 'active';
-
-          await createAuditLogEntry(
-            env, 
-            cert.id, 
-            'certificate_promoted', 
-            cert.subject, 
-            true, 
-            `Certificate promoted from probationary to active after ${newVerificationCount} successful verifications over ${PROBATIONARY_PERIOD_DAYS} days`
-          );
-
-          console.log(`Certificate ${cert.fingerprint_sha256.substring(0, 16)}... PROMOTED to active`);
+        // Update Verification Count
+        await env.DB.prepare(`
+          UPDATE certificate_authorities
+          SET last_check_at = ?,
+              consecutive_failures = 0,
+              successful_verification_count = ?
+          WHERE id = ?
+          `).bind(now, newVerificationCount, cert.id).run();
         }
       }
-
-      await env.DB.prepare(`
-        UPDATE certificate_authorities 
-        SET status = ?, last_check_at = ?, consecutive_failures = 0, successful_verification_count = ?
-        WHERE id = ?
-      `).bind(newStatus, now, newVerificationCount, cert.id).run();
-    }
-  }
-
-  if (await shouldCreateCheckpoint(env)) {
-    console.log("Creating post-verification checkpoint...");
-    await createCheckpoint(env);
-  }
 
   console.log("Periodic verification complete");
 }
