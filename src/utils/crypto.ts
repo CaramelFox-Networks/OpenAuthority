@@ -22,6 +22,35 @@ export async function sha256(message: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+export function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export function hexToBytes(hex: string): Uint8Array {
+  if (hex.length % 2 !== 0) {
+    throw new Error('Invalid hex string');
+  }
+
+  const bytes = new Uint8Array(hex.length / 2);
+
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+
+  return bytes;
+}
+
+export async function sha256Bytes(data: Uint8Array<ArrayBuffer>): Promise<string> {
+  const hashBuffer =
+    await crypto.subtle.digest('SHA-256', data);
+
+  return bytesToHex(
+    new Uint8Array(hashBuffer)
+  );
+}
+
 export function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);

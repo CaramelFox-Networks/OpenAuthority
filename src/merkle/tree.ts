@@ -11,23 +11,62 @@
  */
 
 import { MAX_AUDIT_LOG_ENTRY_SIZE, MAX_MERKLE_TREE_SIZE } from "../config";
-import { sha256 } from "../utils";
+import { sha256Bytes, hexToBytes } from "../utils";
 
 // ============================================================
 // MERKLE TREE IMPLEMENTATION (RFC 6962 Compatible)
 // ============================================================
 
-export async function computeLeafHash(leafData: string): Promise<string> {
+export async function computeLeafHash(
+  leafData: string
+): Promise<string> {
+
   if (leafData.length > MAX_AUDIT_LOG_ENTRY_SIZE) {
-    throw new Error(`Leaf data exceeds maximum size of ${MAX_AUDIT_LOG_ENTRY_SIZE} bytes`);
+    throw new Error(
+      `Leaf data exceeds maximum size of ${MAX_AUDIT_LOG_ENTRY_SIZE} bytes`
+    );
   }
-  const prefixedData = '\x00' + leafData;
-  return sha256(prefixedData);
+
+  const leafBytes =
+    new TextEncoder().encode(leafData);
+
+  const data =
+    new Uint8Array(1 + leafBytes.length);
+
+  data[0] = 0x00;
+  data.set(leafBytes, 1);
+
+  return sha256Bytes(data);
 }
 
-export async function computeNodeHash(left: string, right: string): Promise<string> {
-  const prefixedData = '\x01' + left + right;
-  return sha256(prefixedData);
+export async function computeNodeHash(
+  left: string,
+  right: string
+): Promise<string> {
+
+  const leftBytes =
+    hexToBytes(left);
+
+  const rightBytes =
+    hexToBytes(right);
+
+  const data =
+    new Uint8Array(
+      1 +
+      leftBytes.length +
+      rightBytes.length
+    );
+
+  data[0] = 0x01;
+
+  data.set(leftBytes, 1);
+
+  data.set(
+    rightBytes,
+    1 + leftBytes.length
+  );
+
+  return sha256Bytes(data);
 }
 
 export async function buildMerkleTree(leafHashes: string[]): Promise<{
