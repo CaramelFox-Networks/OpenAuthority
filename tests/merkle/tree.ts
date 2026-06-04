@@ -7,28 +7,31 @@ import {
 
 describe("Merkle tree", () => {
   it("produces deterministic leaf hashes", async () => {
-    const h1 = await computeLeafHash("abc");
-    const h2 = await computeLeafHash("abc");
+    const h1 = await computeLeafHash('abc');
+    const h2 = await computeLeafHash('abc');
 
     expect(h1).toBe(h2);
   });
 
   it("different leaves hash differently", async () => {
-    const h1 = await computeLeafHash("a");
-    const h2 = await computeLeafHash("b");
+    const h1 = await computeLeafHash('a');
+    const h2 = await computeLeafHash('b');
 
     expect(h1).not.toBe(h2);
   });
 
   it("node hash is deterministic", async () => {
-    const h1 = await computeNodeHash("x", "y");
-    const h2 = await computeNodeHash("x", "y");
+    const left = await computeLeafHash('x');
+    const right = await computeLeafHash('y');
+
+    const h1 = await computeNodeHash('left', 'right');
+    const h2 = await computeNodeHash('left', 'right');
 
     expect(h1).toBe(h2);
   });
 
   it("builds single-leaf tree", async () => {
-    const leaf = await computeLeafHash("a");
+    const leaf = await computeLeafHash('a');
 
     const tree = await buildMerkleTree([leaf]);
 
@@ -37,9 +40,9 @@ describe("Merkle tree", () => {
 
   it("builds multi-leaf tree", async () => {
     const leaves = [
-      await computeLeafHash("a"),
-      await computeLeafHash("b"),
-      await computeLeafHash("c")
+      await computeLeafHash('a'),
+      await computeLeafHash('b'),
+      await computeLeafHash('c')
     ];
 
     const tree = await buildMerkleTree(leaves);
@@ -57,8 +60,8 @@ describe("Merkle tree", () => {
 
 describe("computeLeafHash", () => {
   it("prefixes with 0x00", async () => {
-    const hash1 = await computeLeafHash("abc");
-    const hash2 = await computeLeafHash("\x00abc");
+    const hash1 = await computeLeafHash('abc');
+    const hash2 = await computeLeafHash('\x00abc');
 
     expect(hash1).not.toBe(hash2);
     expect(hash1).toHaveLength(64);
@@ -75,10 +78,13 @@ describe("computeLeafHash", () => {
 
 describe("computeNodeHash", () => {
   it("prefixes with 0x01", async () => {
-    const hash = await computeNodeHash("A", "B");
+    const left = await computeLeafHash('A');
+    const right = await computeLeafHash('B');
+
+    const hash = await computeNodeHash('left', 'right');
 
     expect(hash).toHaveLength(64);
-    expect(hash).not.toBe(await computeLeafHash("AB"));
+    expect(hash).not.toBe(await computeLeafHash('AB'));
   });
 });
 
@@ -93,7 +99,9 @@ describe("buildMerkleTree", () => {
   });
 
   it("returns single leaf root", async () => {
-    const result = await buildMerkleTree(["A"]);
+    const leaf = await computeLeafHash('A');
+
+    const result = await buildMerkleTree([leaf]);
 
     expect(result.root).toBe("A");
     expect(result.layers.length).toBe(1);
@@ -101,9 +109,9 @@ describe("buildMerkleTree", () => {
 
   it("handles odd number of leaves", async () => {
     const result = await buildMerkleTree([
-      "A",
-      "B",
-      "C"
+      'A',
+      'B',
+      'C'
     ]);
 
     expect(result.layers.length).toBeGreaterThan(1);
@@ -111,10 +119,10 @@ describe("buildMerkleTree", () => {
 
   it("handles even number of leaves", async () => {
     const result = await buildMerkleTree([
-      "A",
-      "B",
-      "C",
-      "D"
+      'A',
+      'B',
+      'C',
+      'D'
     ]);
 
     expect(result.root).toBeDefined();

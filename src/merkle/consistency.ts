@@ -67,16 +67,28 @@ async function buildConsistencyProofRecursive(
   start: number
 ): Promise<string[]> {
 
+  if (m <= 0 || m > n) {
+    throw new Error("invalid consistency proof parameters");
+  }
+
+  //
+  // RFC6962 base case
+  //
   if (m === n) {
-    return [];
+    const subtreeHash = await hashFullSubtree(
+      leaves,
+      start,
+      n
+    );
+
+    return [subtreeHash];
   }
 
   const k = largestPowerOfTwoLessThan(n);
 
-  // ----------------------------------------------------------
-  // Entire old tree fits inside LEFT subtree
-  // ----------------------------------------------------------
-
+  //
+  // Old tree entirely within left subtree
+  //
   if (m <= k) {
 
     const proof = await buildConsistencyProofRecursive(
@@ -92,15 +104,15 @@ async function buildConsistencyProofRecursive(
       n - k
     );
 
-    proof.push(rightHash);
-
-    return proof;
+    return [
+      ...proof,
+      rightHash
+    ];
   }
 
-  // ----------------------------------------------------------
-  // Old tree spans LEFT + RIGHT
-  // ----------------------------------------------------------
-
+  //
+  // Old tree spans both subtrees
+  //
   const proof = await buildConsistencyProofRecursive(
     leaves,
     m - k,
@@ -114,9 +126,10 @@ async function buildConsistencyProofRecursive(
     k
   );
 
-  proof.unshift(leftHash);
-
-  return proof;
+  return [
+    ...proof,
+    leftHash
+  ];
 }
 
 function largestPowerOfTwoLessThan(n: number): number {
